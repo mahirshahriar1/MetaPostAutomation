@@ -28,23 +28,22 @@ Before you can use this tool, you need to set up a Facebook App and obtain a Use
 4.  Provide an "App Display Name" (e.g., "My Page Poster Tool") and your "App Contact Email".
 5.  If prompted, select your Business Manager account (optional).
 6.  Click "**Create App**" and complete any security checks.
+7.  In any of the step you will have options. select **Manage everything on your Page**.
 
 ### 2. Configure App Use Cases / Products
 
 1.  Once your app is created, you'll be taken to the App Dashboard.
 2.  In the sidebar, find "**Use Cases**" and click "**Edit**" (or look for "Add Product" if "Use Cases" isn't prominent).
-3.  Under "Build customized experiences for your Page", find the "**Manage everything on your Page**" use case and click "**Add**".
-    *   Alternatively, you might need to add the "**Pages API**" product directly.
+3.  Under "Build customized experiences for your Page", find the "**Manage everything on your Page**" use case and click "**Customize**".
 4.  This will add the necessary APIs. You now need to configure permissions.
 
 ### 3. Add Permissions to Your App
 
-1.  In your App Dashboard, navigate to "**App Review**" > "**Permissions and Features**".
-2.  Search for the following permissions and request **Advanced Access** for each (you might be able to test in Development Mode with Standard Access initially, but for wider use or going live, Advanced Access and App Review are needed):
+1.  Search for the following permissions and request **Advanced Access** for each (you might be able to test in Development Mode with Standard Access initially, but for wider use or going live, Advanced Access and App Review are needed):
     *   `pages_manage_posts`: Allows your app to create, edit, and delete posts on Pages managed by a user.
     *   `pages_read_engagement`: Allows your app to read content posted by the Page, and read Page insights.
     *   `pages_show_list`: Allows your app to access the list of Pages a user manages.
-    *   (Optional but Recommended for video posting) `publish_video`: Allows your app to upload videos and publish them to a user's timeline, or to a Page or Group they admin.
+
 3.  For development and testing, you might not need to submit for App Review immediately, but these permissions must be "added" to your app configuration.
 
 ### 4. Generate User Access Token

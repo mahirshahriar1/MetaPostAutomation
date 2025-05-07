@@ -24,7 +24,7 @@
       padding: 20px;
       display: flex;
       justify-content: center;
-      align-items: flex-start; /* Align to top for long content */
+      align-items: flex-start;
       min-height: 100vh;
     }
 
@@ -34,7 +34,8 @@
       border-radius: var(--border-radius);
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
       width: 100%;
-      max-width: 600px;
+      max-width: 700px; /* Increased max-width for instructions */
+      margin-bottom: 30px; /* Space for instructions if they expand a lot */
     }
 
     h2 {
@@ -80,7 +81,6 @@
       min-height: 80px;
     }
 
-    /* Custom File Input */
     .file-upload-wrapper {
       position: relative;
       overflow: hidden;
@@ -128,11 +128,11 @@
       cursor: pointer;
       width: 100%;
       transition: background-color 0.2s ease-in-out;
-      margin-top: 10px; /* Add some space above button */
+      margin-top: 10px;
     }
 
     button:hover {
-      background-color: #166fe5; /* Darker shade of FB blue */
+      background-color: #166fe5;
     }
     button:disabled {
       background-color: var(--medium-gray);
@@ -177,6 +177,61 @@
         margin-top: 5px;
     }
 
+    /* Styles for Setup Instructions */
+    .setup-instructions {
+        margin-top: 30px;
+        border-top: 1px solid var(--medium-gray);
+        padding-top: 20px;
+    }
+    .setup-instructions h3 {
+        color: var(--primary-color);
+        margin-bottom: 15px;
+        text-align: center;
+    }
+    .setup-instructions details {
+        background-color: #fff;
+        border: 1px solid var(--medium-gray);
+        border-radius: var(--border-radius);
+        margin-bottom: 10px;
+        padding: 5px; /* Small padding around summary and content */
+    }
+    .setup-instructions summary {
+        font-weight: 600;
+        color: var(--dark-gray);
+        padding: 10px;
+        cursor: pointer;
+        outline: none;
+        list-style-position: inside; /* Keeps marker better aligned */
+    }
+    .setup-instructions summary::-webkit-details-marker { /* For Chrome/Safari */
+        margin-right: 5px;
+    }
+    .setup-instructions details[open] summary {
+        color: var(--primary-color);
+    }
+    .setup-instructions .details-content {
+        padding: 0 15px 15px 15px; /* Padding for content inside details */
+        font-size: 0.95em;
+        line-height: 1.6;
+    }
+    .setup-instructions .details-content ol,
+    .setup-instructions .details-content ul {
+        padding-left: 20px; /* Indent lists */
+    }
+    .setup-instructions .details-content code {
+        background-color: var(--light-gray);
+        padding: 2px 4px;
+        border-radius: 4px;
+        font-family: monospace;
+    }
+    .setup-instructions a {
+        color: var(--primary-color);
+        text-decoration: none;
+    }
+    .setup-instructions a:hover {
+        text-decoration: underline;
+    }
+
   </style>
 </head>
 <body>
@@ -187,7 +242,7 @@
     <div class="form-group">
       <label for="accessToken">User Access Token:</label>
       <input type="text" id="accessToken" placeholder="Enter your user access token" />
-      <p class="helper-text">Required permissions: `pages_show_list`, `pages_manage_posts`, `pages_read_engagement`.</p>
+      <p class="helper-text">Required permissions: `pages_show_list`, `pages_manage_posts`, `pages_read_engagement` (and `publish_video` for videos). See setup instructions below.</p>
     </div>
 
     <div class="form-group">
@@ -215,9 +270,90 @@
       <h3>Post Status:</h3>
       <ul id="outputList"></ul>
     </div>
+
+    <!-- Setup Instructions Section -->
+    <div class="setup-instructions">
+        <h3>Setup Instructions</h3>
+        <details>
+            <summary>Step 1: Create a Facebook App</summary>
+            <div class="details-content">
+                <ol>
+                    <li>Go to <a href="https://developers.facebook.com/" target="_blank" rel="noopener noreferrer">Facebook for Developers</a>.</li>
+                    <li>Click on "<strong>My Apps</strong>" and then "<strong>Create App</strong>".</li>
+                    <li>Select an app type (e.g., "<strong>Business</strong>"). Click "Next".</li>
+                    <li>Provide an "App Display Name" (e.g., "My Page Poster Tool") and your "App Contact Email".</li>
+                    <li>If prompted, select your Business Manager account (optional).</li>
+                    <li>Click "<strong>Create App</strong>" and complete any security checks.</li>
+                    <li>Select <strong> Manage everything on your page</strong> option</li>
+                </ol>
+            </div>
+        </details>
+
+        <details>
+            <summary>Step 2: Configure App Use Cases / Add Products</summary>
+            <div class="details-content">
+                <ol>
+                    <li>Once your app is created, you'll be on the App Dashboard.</li>
+                    <li>In the sidebar, find "<strong>Use Cases</strong>" and click "<strong>Edit</strong>" (or "Add Product" if "Use Cases" isn't prominent).</li>
+                    <li>Under "Build customized experiences for your Page", find the "<strong>Manage everything on your Page</strong>" use case and click "<strong>Customize</strong>".
+                    </li>
+                </ol>
+            </div>
+        </details>
+
+        <details>
+            <summary>Step 3: Add Required Permissions to Your App</summary>
+            <div class="details-content">
+                <ol>                  
+                    <li>Search for and add the following permissions. For testing, Standard Access might be sufficient. For broader use, you'll need Advanced Access (which may require App Review).
+                        <ul>
+                            <li><code>pages_manage_posts</code>: Allows creating, editing, and deleting posts.</li>
+                            <li><code>pages_read_engagement</code>: Allows reading Page content and insights.</li>
+                            <li><code>pages_show_list</code>: Allows accessing the list of Pages a user manages.</li>                         
+                        </ul>
+                    </li>
+                </ol>
+            </div>
+        </details>
+
+        <details>
+            <summary>Step 4: Generate User Access Token</summary>
+            <div class="details-content">
+                <ol>
+                    <li>In your App Dashboard, go to "<strong>Tools</strong>" > "<strong>Graph API Explorer</strong>".</li>
+                    <li>On the right side:
+                        <ul>
+                            <li><strong>Facebook App</strong>: Select the app you created.</li>
+                            <li><strong>User or Page</strong>: Select "<strong>Get User Access Token</strong>".</li>
+                        </ul>
+                    </li>
+                    <li>A pop-up will appear. Under "<strong>Permissions</strong>", select AT LEAST:
+                        <ul>
+                            <li><code>pages_show_list</code></li>
+                            <li><code>pages_read_engagement</code></li>
+                            <li><code>pages_manage_posts</code></li>
+                        </ul>
+                    </li>
+                    <li>Click "<strong>Generate Access Token</strong>". Authorize the app with your Facebook account.</li>
+                    <li>The Graph API Explorer will show a User Access Token. This is a short-lived token (expires in ~1-2 hours).</li>
+                    <li><strong>To get a Long-Lived Token (recommended):</strong>
+                        <ol type="a">
+                            <li>Copy the short-lived token.</li>
+                            <li>Go to "<strong>Tools</strong>" > "<strong>Access Token Debugger</strong>".</li>
+                            <li>Paste your short-lived token and click "Debug".</li>
+                            <li>Click the "<strong>Extend Access Token</strong>" button. Copy this new long-lived token (valid ~60 days).</li>
+                        </ol>
+                    </li>
+                    <li>Paste this User Access Token into the field at the top of this page.</li>
+                </ol>
+            </div>
+        </details>
+    </div>
+
   </div>
 
   <script>
+    // JavaScript remains the same as the previous enhanced UI version
     const accessTokenInput = document.getElementById('accessToken');
     const messageInput = document.getElementById('message');
     const pageIdsInput = document.getElementById('pageIds');
@@ -250,7 +386,6 @@
       const pageIdsRaw = pageIdsInput.value.trim();
       const mediaFiles = mediaFilesInput.files;
 
-      // Clear previous output and disable button
       outputList.innerHTML = '';
       outputContainer.style.display = 'none';
       postButton.disabled = true;
@@ -321,18 +456,12 @@
           };
 
           if (mediaFiles.length > 0) {
-            // For simplicity, this example handles one media file at a time for multi-photo/video posts.
-            // For true multi-photo posts, you upload them unpublished then attach.
-            // For a single video or single photo, this approach is fine.
-            // Let's assume we're posting one by one or making a multi-photo post.
-
             if (mediaFiles.length === 1 && mediaFiles[0].type.startsWith('video/')) {
-                // Single Video Post
                 postEndpoint = `https://graph.facebook.com/v18.0/${pageId}/videos`;
                 const formData = new FormData();
                 formData.append('access_token', pageToken);
                 formData.append('source', mediaFiles[0]);
-                if (message) formData.append('description', message); // Video uses 'description'
+                if (message) formData.append('description', message);
 
                 addOutputMessage(`Uploading video to ${pageName}...`, 'info');
                 const uploadRes = await fetch(postEndpoint, {
@@ -345,10 +474,9 @@
                 } else {
                     addOutputMessage(`Video post failed for ${pageName}: ${uploadData.error ? uploadData.error.message : JSON.stringify(uploadData)}`, 'error');
                 }
-                continue; // Move to next page after video post
+                continue;
 
             } else if (mediaFiles.length > 0 && Array.from(mediaFiles).every(f => f.type.startsWith('image/'))) {
-                // Multi-Photo Post or Single Photo Post
                 const attached_media = [];
                 addOutputMessage(`Uploading ${mediaFiles.length} image(s) for ${pageName}...`, 'info');
 
@@ -357,7 +485,7 @@
                     const photoFormData = new FormData();
                     photoFormData.append('access_token', pageToken);
                     photoFormData.append('source', file);
-                    photoFormData.append('published', 'false'); // Upload unpublished
+                    photoFormData.append('published', 'false');
 
                     const photoUploadRes = await fetch(`https://graph.facebook.com/v18.0/${pageId}/photos`, {
                         method: 'POST',
@@ -370,7 +498,6 @@
                         addOutputMessage(`Image ${i+1} uploaded for ${pageName} (unpublished ID: ${photoUploadData.id})`, 'info');
                     } else {
                         addOutputMessage(`Image ${i+1} upload failed for ${pageName}: ${photoUploadData.error ? photoUploadData.error.message : JSON.stringify(photoUploadData)}`, 'error');
-                        // Optionally skip this page or stop entirely
                     }
                 }
 
@@ -379,33 +506,23 @@
                     addOutputMessage(`Publishing post with ${attached_media.length} image(s) to ${pageName}...`, 'info');
                 } else if (mediaFiles.length > 0 && attached_media.length === 0) {
                     addOutputMessage(`No images successfully uploaded for ${pageName}. Skipping media post.`, 'error');
-                    if (!message) continue; // If no message and no media, skip
-                    // Fall through to text-only post if message exists
+                    if (!message) continue;
                 }
             } else if (mediaFiles.length > 0) {
-                // Mixed media or other types - Facebook API usually prefers separate calls or specific endpoints.
-                // This example does not fully support mixed image/video in a single feed post easily.
-                // For simplicity, we'll just try to post with the first media as a photo if it's not a video and multiple files.
-                // A more robust solution would handle this more gracefully.
-                 addOutputMessage(`Mixed media types or unsupported file type detected for ${pageName}. Only multiple images or a single video is robustly supported in this example. Attempting with first file if image.`, 'error');
+                 addOutputMessage(`Mixed media types or unsupported file type detected for ${pageName}. Only multiple images or a single video is robustly supported. Attempting with first file if image.`, 'error');
                 if (mediaFiles[0].type.startsWith('image/')) {
-                    const photoFormData = new FormData();
-                    photoFormData.append('access_token', pageToken);
-                    photoFormData.append('source', mediaFiles[0]);
-                    // For single photo with message, it's simpler to use /page/photos with 'message' parameter
                     postEndpoint = `https://graph.facebook.com/v18.0/${pageId}/photos`;
-                    body = photoFormData; // Reset body for form data
-                    if(message) body.append('caption', message); // Use 'caption' for photos endpoint
-
+                    body = new FormData(); // Reset body for form data
+                    body.append('access_token', pageToken);
+                    body.append('source', mediaFiles[0]);
+                    if(message) body.append('caption', message);
                 } else {
                      addOutputMessage(`Cannot post media to ${pageName} due to unsupported combination/type.`, 'error');
-                     if (!message) continue; // If no message, skip
+                     if (!message) continue;
                 }
             }
           }
 
-
-          // If it's not a video post (which already completed) or photo FormData post
           if (!(mediaFiles.length === 1 && mediaFiles[0].type.startsWith('video/')) && !(body instanceof FormData) ) {
             if (!message && (!body.attached_media || body.attached_media.length === 0)) {
                  addOutputMessage(`Skipping ${pageName}: No message and no media to post.`, 'info');
@@ -423,11 +540,11 @@
             } else {
               addOutputMessage(`Post failed for ${pageName}: ${postData.error ? postData.error.message : JSON.stringify(postData)}`, 'error');
             }
-          } else if (body instanceof FormData) { // For single photo post
+          } else if (body instanceof FormData) {
               addOutputMessage(`Uploading single photo to ${pageName}...`, 'info');
               const postRes = await fetch(postEndpoint, {
                 method: 'POST',
-                body: body // FormData already has token and message/caption
+                body: body
               });
               const postData = await postRes.json();
               if (postData.id) {
