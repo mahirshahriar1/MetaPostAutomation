@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Facebook Page Poster</title>
+  <style>
+    :root {
+      --primary-color: #1877f2; /* Facebook Blue */
+      --light-gray: #f0f2f5;
+      --medium-gray: #e4e6eb;
+      --dark-gray: #606770;
+      --text-color: #1c1e21;
+      --success-color: #42b72a;
+      --error-color: #fa383e;
+      --border-radius: 8px;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--light-gray);
+      color: var(--text-color);
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start; /* Align to top for long content */
+      min-height: 100vh;
+    }
+
+    .container {
+      background-color: #fff;
+      padding: 25px 30px;
+      border-radius: var(--border-radius);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 600px;
+    }
+
+    h2 {
+      text-align: center;
+      color: var(--primary-color);
+      margin-top: 0;
+      margin-bottom: 25px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--dark-gray);
+    }
+
+    input[type="text"],
+    textarea,
+    select {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      border: 1px solid var(--medium-gray);
+      border-radius: var(--border-radius);
+      box-sizing: border-box;
+      transition: border-color 0.2s ease-in-out;
+    }
+
+    input[type="text"]:focus,
+    textarea:focus,
+    select:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 2px rgba(24, 119, 242, 0.2);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    /* Custom File Input */
+    .file-upload-wrapper {
+      position: relative;
+      overflow: hidden;
+      display: inline-block;
+      width: 100%;
+      border: 1px dashed var(--medium-gray);
+      border-radius: var(--border-radius);
+      padding: 10px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+    .file-upload-wrapper:hover {
+        border-color: var(--primary-color);
+    }
+
+    .file-upload-wrapper input[type="file"] {
+      position: absolute;
+      left: 0;
+      top: 0;
+      opacity: 0;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+    }
+    .file-upload-text {
+        color: var(--dark-gray);
+    }
+    #fileNameDisplay {
+        font-size: 0.9em;
+        color: var(--dark-gray);
+        margin-top: 5px;
+        word-break: break-all;
+    }
+
+
+    button {
+      background-color: var(--primary-color);
+      color: white;
+      padding: 12px 20px;
+      border: none;
+      border-radius: var(--border-radius);
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      transition: background-color 0.2s ease-in-out;
+      margin-top: 10px; /* Add some space above button */
+    }
+
+    button:hover {
+      background-color: #166fe5; /* Darker shade of FB blue */
+    }
+    button:disabled {
+      background-color: var(--medium-gray);
+      cursor: not-allowed;
+    }
+
+    .output-container {
+      margin-top: 25px;
+      padding: 15px;
+      background-color: var(--light-gray);
+      border-radius: var(--border-radius);
+      border: 1px solid var(--medium-gray);
+    }
+    .output-container h3 {
+        margin-top: 0;
+        color: var(--dark-gray);
+        font-size: 1.1em;
+    }
+
+    #outputList {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    #outputList li {
+      padding: 8px 0;
+      border-bottom: 1px solid var(--medium-gray);
+      font-size: 0.95em;
+    }
+    #outputList li:last-child {
+      border-bottom: none;
+    }
+
+    .output-success { color: var(--success-color); }
+    .output-error { color: var(--error-color); }
+    .output-info { color: var(--dark-gray); }
+
+    .helper-text {
+        font-size: 0.85em;
+        color: var(--dark-gray);
+        margin-top: 5px;
+    }
+
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>Post to Facebook Page</h2>
+
+    <div class="form-group">
+      <label for="accessToken">User Access Token:</label>
+      <input type="text" id="accessToken" placeholder="Enter your user access token" />
+      <p class="helper-text">Required permissions: `pages_show_list`, `pages_manage_posts`, `pages_read_engagement`.</p>
+    </div>
+
+    <div class="form-group">
+      <label for="message">Message:</label>
+      <textarea id="message" rows="4" placeholder="Enter your message..."></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="pageIds">Page IDs (comma-separated):</label>
+      <input type="text" id="pageIds" placeholder="e.g., 123456,654321" />
+    </div>
+
+    <div class="form-group">
+      <label for="mediaFiles">Upload Images/Videos (optional):</label>
+      <div class="file-upload-wrapper">
+        <span class="file-upload-text">Click or drag files here</span>
+        <input type="file" id="mediaFiles" multiple accept="image/*,video/*" onchange="updateFileName(this)"/>
+      </div>
+      <div id="fileNameDisplay">No files selected.</div>
+    </div>
+
+    <button id="postButton" onclick="postToPages()">Post to Facebook Pages</button>
+
+    <div class="output-container" id="outputContainer" style="display: none;">
+      <h3>Post Status:</h3>
+      <ul id="outputList"></ul>
+    </div>
+  </div>
+
+  <script>
+    const accessTokenInput = document.getElementById('accessToken');
+    const messageInput = document.getElementById('message');
+    const pageIdsInput = document.getElementById('pageIds');
+    const mediaFilesInput = document.getElementById('mediaFiles');
+    const postButton = document.getElementById('postButton');
+    const outputContainer = document.getElementById('outputContainer');
+    const outputList = document.getElementById('outputList');
+    const fileNameDisplay = document.getElementById('fileNameDisplay');
+
+    function updateFileName(input) {
+        if (input.files.length > 0) {
+            const fileNames = Array.from(input.files).map(file => file.name).join(', ');
+            fileNameDisplay.textContent = fileNames;
+        } else {
+            fileNameDisplay.textContent = 'No files selected.';
+        }
+    }
+
+    function addOutputMessage(message, type = 'info') { // type can be 'info', 'success', 'error'
+        outputContainer.style.display = 'block';
+        const li = document.createElement('li');
+        li.textContent = message;
+        li.className = `output-${type}`;
+        outputList.appendChild(li);
+    }
+
+    async function postToPages() {
+      const token = accessTokenInput.value.trim();
+      const message = messageInput.value.trim();
+      const pageIdsRaw = pageIdsInput.value.trim();
+      const mediaFiles = mediaFilesInput.files;
+
+      // Clear previous output and disable button
+      outputList.innerHTML = '';
+      outputContainer.style.display = 'none';
+      postButton.disabled = true;
+      postButton.textContent = 'Posting...';
+
+      if (!token) {
+        addOutputMessage("User Access Token is required.", 'error');
+        postButton.disabled = false;
+        postButton.textContent = 'Post to Facebook Pages';
+        return;
+      }
+      if (!message && mediaFiles.length === 0) {
+        addOutputMessage("Message or media is required.", 'error');
+        postButton.disabled = false;
+        postButton.textContent = 'Post to Facebook Pages';
+        return;
+      }
+       if (!pageIdsRaw) {
+        addOutputMessage("Page IDs are required.", 'error');
+        postButton.disabled = false;
+        postButton.textContent = 'Post to Facebook Pages';
+        return;
+      }
+
+      const pageIds = pageIdsRaw.split(',').map(p => p.trim()).filter(p => p);
+       if (pageIds.length === 0) {
+        addOutputMessage("Please enter valid Page IDs.", 'error');
+        postButton.disabled = false;
+        postButton.textContent = 'Post to Facebook Pages';
+        return;
+      }
+
+
+      try {
+        addOutputMessage("Fetching page access tokens...", 'info');
+        const res = await fetch(`https://graph.facebook.com/v18.0/me/accounts?fields=id,name,access_token&access_token=${token}`);
+        const data = await res.json();
+
+        if (data.error || !data.data) {
+          addOutputMessage(`Error fetching page tokens: ${data.error ? data.error.message : JSON.stringify(data)}`, 'error');
+          postButton.disabled = false;
+          postButton.textContent = 'Post to Facebook Pages';
+          return;
+        }
+
+        const pageTokenMap = {};
+        data.data.forEach(page => {
+          pageTokenMap[page.id] = { token: page.access_token, name: page.name };
+        });
+
+        addOutputMessage(`Found ${Object.keys(pageTokenMap).length} manageable pages.`, 'info');
+
+        for (let pageId of pageIds) {
+          const pageInfo = pageTokenMap[pageId];
+          if (!pageInfo) {
+            addOutputMessage(`Page ID ${pageId}: Not found or no permission. Check if this ID is managed by the provided User Access Token.`, 'error');
+            continue;
+          }
+
+          const pageName = pageInfo.name;
+          const pageToken = pageInfo.token;
+          addOutputMessage(`Processing Page: ${pageName} (${pageId})`, 'info');
+
+          let postEndpoint = `https://graph.facebook.com/v18.0/${pageId}/feed`;
+          let body = {
+            message: message,
+            access_token: pageToken
+          };
+
+          if (mediaFiles.length > 0) {
+            // For simplicity, this example handles one media file at a time for multi-photo/video posts.
+            // For true multi-photo posts, you upload them unpublished then attach.
+            // For a single video or single photo, this approach is fine.
+            // Let's assume we're posting one by one or making a multi-photo post.
+
+            if (mediaFiles.length === 1 && mediaFiles[0].type.startsWith('video/')) {
+                // Single Video Post
+                postEndpoint = `https://graph.facebook.com/v18.0/${pageId}/videos`;
+                const formData = new FormData();
+                formData.append('access_token', pageToken);
+                formData.append('source', mediaFiles[0]);
+                if (message) formData.append('description', message); // Video uses 'description'
+
+                addOutputMessage(`Uploading video to ${pageName}...`, 'info');
+                const uploadRes = await fetch(postEndpoint, {
+                    method: 'POST',
+                    body: formData
+                });
+                const uploadData = await uploadRes.json();
+                if (uploadData.id) {
+                    addOutputMessage(`Video posted to ${pageName} (ID: ${uploadData.id})`, 'success');
+                } else {
+                    addOutputMessage(`Video post failed for ${pageName}: ${uploadData.error ? uploadData.error.message : JSON.stringify(uploadData)}`, 'error');
+                }
+                continue; // Move to next page after video post
+
+            } else if (mediaFiles.length > 0 && Array.from(mediaFiles).every(f => f.type.startsWith('image/'))) {
+                // Multi-Photo Post or Single Photo Post
+                const attached_media = [];
+                addOutputMessage(`Uploading ${mediaFiles.length} image(s) for ${pageName}...`, 'info');
+
+                for (let i = 0; i < mediaFiles.length; i++) {
+                    const file = mediaFiles[i];
+                    const photoFormData = new FormData();
+                    photoFormData.append('access_token', pageToken);
+                    photoFormData.append('source', file);
+                    photoFormData.append('published', 'false'); // Upload unpublished
+
+                    const photoUploadRes = await fetch(`https://graph.facebook.com/v18.0/${pageId}/photos`, {
+                        method: 'POST',
+                        body: photoFormData
+                    });
+                    const photoUploadData = await photoUploadRes.json();
+
+                    if (photoUploadData.id) {
+                        attached_media.push({ media_fbid: photoUploadData.id });
+                        addOutputMessage(`Image ${i+1} uploaded for ${pageName} (unpublished ID: ${photoUploadData.id})`, 'info');
+                    } else {
+                        addOutputMessage(`Image ${i+1} upload failed for ${pageName}: ${photoUploadData.error ? photoUploadData.error.message : JSON.stringify(photoUploadData)}`, 'error');
+                        // Optionally skip this page or stop entirely
+                    }
+                }
+
+                if (attached_media.length > 0) {
+                    body.attached_media = attached_media;
+                    addOutputMessage(`Publishing post with ${attached_media.length} image(s) to ${pageName}...`, 'info');
+                } else if (mediaFiles.length > 0 && attached_media.length === 0) {
+                    addOutputMessage(`No images successfully uploaded for ${pageName}. Skipping media post.`, 'error');
+                    if (!message) continue; // If no message and no media, skip
+                    // Fall through to text-only post if message exists
+                }
+            } else if (mediaFiles.length > 0) {
+                // Mixed media or other types - Facebook API usually prefers separate calls or specific endpoints.
+                // This example does not fully support mixed image/video in a single feed post easily.
+                // For simplicity, we'll just try to post with the first media as a photo if it's not a video and multiple files.
+                // A more robust solution would handle this more gracefully.
+                 addOutputMessage(`Mixed media types or unsupported file type detected for ${pageName}. Only multiple images or a single video is robustly supported in this example. Attempting with first file if image.`, 'error');
+                if (mediaFiles[0].type.startsWith('image/')) {
+                    const photoFormData = new FormData();
+                    photoFormData.append('access_token', pageToken);
+                    photoFormData.append('source', mediaFiles[0]);
+                    // For single photo with message, it's simpler to use /page/photos with 'message' parameter
+                    postEndpoint = `https://graph.facebook.com/v18.0/${pageId}/photos`;
+                    body = photoFormData; // Reset body for form data
+                    if(message) body.append('caption', message); // Use 'caption' for photos endpoint
+
+                } else {
+                     addOutputMessage(`Cannot post media to ${pageName} due to unsupported combination/type.`, 'error');
+                     if (!message) continue; // If no message, skip
+                }
+            }
+          }
+
+
+          // If it's not a video post (which already completed) or photo FormData post
+          if (!(mediaFiles.length === 1 && mediaFiles[0].type.startsWith('video/')) && !(body instanceof FormData) ) {
+            if (!message && (!body.attached_media || body.attached_media.length === 0)) {
+                 addOutputMessage(`Skipping ${pageName}: No message and no media to post.`, 'info');
+                 continue;
+            }
+            const postRes = await fetch(postEndpoint, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(body)
+            });
+            const postData = await postRes.json();
+
+            if (postData.id) {
+              addOutputMessage(`Post successful to ${pageName} (ID: ${postData.id})`, 'success');
+            } else {
+              addOutputMessage(`Post failed for ${pageName}: ${postData.error ? postData.error.message : JSON.stringify(postData)}`, 'error');
+            }
+          } else if (body instanceof FormData) { // For single photo post
+              addOutputMessage(`Uploading single photo to ${pageName}...`, 'info');
+              const postRes = await fetch(postEndpoint, {
+                method: 'POST',
+                body: body // FormData already has token and message/caption
+              });
+              const postData = await postRes.json();
+              if (postData.id) {
+                addOutputMessage(`Photo posted to ${pageName} (ID: ${postData.id})`, 'success');
+              } else {
+                addOutputMessage(`Photo post failed for ${pageName}: ${postData.error ? postData.error.message : JSON.stringify(postData)}`, 'error');
+              }
+          }
+        }
+      } catch (err) {
+        console.error("Unexpected error:", err);
+        addOutputMessage(`Unexpected error: ${err.message || err}`, 'error');
+      } finally {
+        postButton.disabled = false;
+        postButton.textContent = 'Post to Facebook Pages';
+      }
+    }
+  </script>
+</body>
+</html>
